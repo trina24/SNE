@@ -7,13 +7,12 @@ class Tsp:
 
     def __init__(self, temp0, M, L):
         self.temp0 = temp0
-        self.t = 0
+        self.temp = temp0
         self.s = [i+1 for i in range(10)]
         random.shuffle(self.s)
         self.M = M
         self.L = L
         self.accepted = 0
-        self.accepted_lst = []
 
     def algorithm(self):
         while (self.accepted <= self.L):
@@ -26,15 +25,19 @@ class Tsp:
                 if (self.accept(s, diff)):
                     self.s = s
                     self.accepted += 1
-                    self.accepted_lst.append(s)
             self.update()
         return gen
 
     def dist(self, a, b):
-        if ((a == 1 and b == 10) or (a == 10 and b == 1)):
+        if ((a == 1 and b == 2) or (a == 9 and b == 10)):
             return 1
+        elif (a < b):
+            return math.pow(a,3) + math.pow(b,3) - a * math.pow(b,2) + 4 * math.pow(a,2) - \
+              4 * math.pow(b,2) + 4 * a + 4 * b
+        elif (a > b):
+            return self.dist(b, a)
         else:
-            return abs(a-b)
+            return 0
 
     def expense(self, s):
         exp = 0
@@ -60,7 +63,7 @@ class Tsp:
             return r < math.exp(-diff / self.temp)
 
     def update(self):
-        self.temp = self.temp0 / (1 + math.log(self.t + 1))
+        self.temp = self.temp0 / (1 + math.log(self.temp + 1))
 
     def find_min(self, gen):
         min_exp = self.expense(gen[0])
@@ -74,8 +77,7 @@ class Tsp:
 class Main:
 
     tsp = Tsp(10, 10, 3)
-    tsp.algorithm()
-    gen = tsp.accepted_lst
+    gen = tsp.algorithm()
     best = tsp.find_min(gen)
     for element in gen:
         print element
